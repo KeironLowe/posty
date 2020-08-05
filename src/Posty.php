@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace Posty;
 
 use Closure;
 
@@ -102,67 +102,6 @@ class Posty
     }
 
     /**
-     * Removes the given column from the admin screen.
-     *
-     * @param string $columnToRemove
-     * @return $this
-     */
-    public function removeColumn(string $columnToRemove): self
-    {
-        add_filter(
-            'manage_' . $this->name . '_posts_columns',
-            static function (array $existingColumns) use ($columnToRemove) {
-                unset($existingColumns[$columnToRemove]);
-                return $existingColumns;
-            }
-        );
-
-        return $this;
-    }
-
-    /**
-     * Removes the given columns from the admin screen.
-     *
-     * @param array<string> $columnsToRemove
-     * @return $this
-     */
-    public function removeColumns(array $columnsToRemove): self
-    {
-        foreach($columnsToRemove as $columnToRemove) {
-            $this->removeColumn($columnToRemove);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Reorders the goven columns for the admin screen.
-     *
-     * @param array<string>|Closure $columnOrder
-     * @return $this
-     */
-    public function reorderColumns($columnOrder): self
-    {
-        add_filter(
-            'manage_' . $this->name . '_posts_columns',
-            static function (array $existingColumns) use ($columnOrder) {
-
-                if(is_array($columnOrder)) {
-                    return array_merge(array_flip($columnOrder), $existingColumns);
-                }
-
-                if($columnOrder instanceof Closure) {
-                    return array_merge(array_flip($columnOrder(array_keys($existingColumns))), $existingColumns);
-                }
-
-                return $existingColumns;
-            }
-        );
-
-        return $this;
-    }
-
-    /**
      * Adds the given column to the admin screen.
      *
      * @param string   $name
@@ -224,11 +163,72 @@ class Posty
     }
 
     /**
+     * Removes the given column from the admin screen.
+     *
+     * @param string $columnToRemove
+     * @return $this
+     */
+    public function removeColumn(string $columnToRemove): self
+    {
+        add_filter(
+            'manage_' . $this->name . '_posts_columns',
+            static function (array $existingColumns) use ($columnToRemove) {
+                unset($existingColumns[$columnToRemove]);
+                return $existingColumns;
+            }
+        );
+
+        return $this;
+    }
+
+    /**
+     * Removes the given columns from the admin screen.
+     *
+     * @param array<string> $columnsToRemove
+     * @return $this
+     */
+    public function removeColumns(array $columnsToRemove): self
+    {
+        foreach($columnsToRemove as $columnToRemove) {
+            $this->removeColumn($columnToRemove);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Reorders the goven columns for the admin screen.
+     *
+     * @param array<string>|Closure $columnOrder
+     * @return $this
+     */
+    public function reorderColumns($columnOrder): self
+    {
+        add_filter(
+            'manage_' . $this->name . '_posts_columns',
+            static function (array $existingColumns) use ($columnOrder) {
+
+                if(is_array($columnOrder)) {
+                    return array_merge(array_flip($columnOrder), $existingColumns);
+                }
+
+                if($columnOrder instanceof Closure) {
+                    return array_merge(array_flip($columnOrder(array_keys($existingColumns))), $existingColumns);
+                }
+
+                return $existingColumns;
+            }
+        );
+
+        return $this;
+    }
+
+    /**
      * Returns the default labels.
      *
      * @return array<string>
      */
-    protected function getDefaultLabels(): array
+    public function getDefaultLabels(): array
     {
         return [
             'name'                  => $this->pluralName,
@@ -252,7 +252,7 @@ class Posty
      *
      * @return array<mixed>
      */
-    protected function getDefaultArguments(): array
+    public function getDefaultArguments(): array
     {
         return [
             'labels'      => $this->labels,

@@ -9,16 +9,29 @@
       "email": "keiron@keironlowe.co.uk"
     }
   ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/sitecrafting/wp_mock/"
+    }
+  ],
   "minimum-stability": "stable",
   "autoload": {
     "psr-4": {
       "Posty\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
   "require": {
   },
   "require-dev": {
     "phpstan/phpstan": "^0.12.35",
-    "szepeviktor/phpstan-wordpress": "^0.6.2"
+    "szepeviktor/phpstan-wordpress": "^0.6.2",
+    "phpunit/phpunit": "^9",
+    "10up/wp_mock": "dev-feature/closures"
   }
 }
