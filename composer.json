@@ -1,0 +1,24 @@
+{
+  "name": "keironlowe/posty",
+  "description": "Object Orientated WordPress CPT Generator",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Keiron Lowe",
+      "email": "keiron@keironlowe.co.uk"
+    }
+  ],
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "Posty\\": "src/"
+    }
+  },
+  "require": {
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^0.12.35",
+    "szepeviktor/phpstan-wordpress": "^0.6.2"
+  }
+}

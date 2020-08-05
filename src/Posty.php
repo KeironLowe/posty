@@ -23,12 +23,12 @@ class Posty
     protected string $pluralName;
 
     /**
-     * @var array The post type labels
+     * @var array<string> The post type labels
      */
     protected array $labels;
 
     /**
-     * @var array The post type arguments.
+     * @var array<mixed> The post type arguments.
      */
     protected array $arguments;
 
@@ -39,7 +39,7 @@ class Posty
      * @param string $singular
      * @param string $plural
      */
-    protected function __construct(string $name, string $singular, string $plural)
+    public function __construct(string $name, string $singular, string $plural)
     {
         $this->name = $name;
         $this->singularName = $singular;
@@ -78,7 +78,7 @@ class Posty
     /**
      * Sets the post type labels.
      *
-     * @param array $labels
+     * @param array<string> $labels
      * @return static
      */
     public function setLabels(array $labels): self
@@ -91,7 +91,7 @@ class Posty
     /**
      * Sets the arguments for the post type.
      *
-     * @param array $arguments
+     * @param array<mixed> $arguments
      * @return $this
      */
     public function setArguments(array $arguments): self
@@ -102,7 +102,7 @@ class Posty
     }
 
     /**
-     * Removes the given columns from the admin screen.
+     * Removes the given column from the admin screen.
      *
      * @param string $columnToRemove
      * @return $this
@@ -121,9 +121,9 @@ class Posty
     }
 
     /**
-     * Removes multiple columns from the admin screen.
+     * Removes the given columns from the admin screen.
      *
-     * @param array $columnsToRemove
+     * @param array<string> $columnsToRemove
      * @return $this
      */
     public function removeColumns(array $columnsToRemove): self
@@ -136,9 +136,9 @@ class Posty
     }
 
     /**
-     * Reorders the columns for the admin screen.
+     * Reorders the goven columns for the admin screen.
      *
-     * @param array|Closure $columnOrder
+     * @param array<string>|Closure $columnOrder
      * @return $this
      */
     public function reorderColumns($columnOrder): self
@@ -163,7 +163,7 @@ class Posty
     }
 
     /**
-     * Adds a new column to the admin screen.
+     * Adds the given column to the admin screen.
      *
      * @param string   $name
      * @param \Closure $callback
@@ -206,9 +206,9 @@ class Posty
     }
 
     /**
-     * Adds multiple columns to the admin screen.
+     * Adds the given columns to the admin screen.
      *
-     * @param array $columnsToAdd
+     * @param array<string> $columnsToAdd
      * @return $this
      */
     public function addColumns(array $columnsToAdd): self
@@ -226,7 +226,7 @@ class Posty
     /**
      * Returns the default labels.
      *
-     * @return array
+     * @return array<string>
      */
     protected function getDefaultLabels(): array
     {
@@ -250,7 +250,7 @@ class Posty
     /**
      * Returns the default arguments.
      *
-     * @return array
+     * @return array<mixed>
      */
     protected function getDefaultArguments(): array
     {
