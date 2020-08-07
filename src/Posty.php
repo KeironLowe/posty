@@ -2,233 +2,122 @@
 
 namespace Posty;
 
-use Closure;
+use Posty\Traits\Values;
+use Posty\Columns\ColumnRepository;
 
 class Posty
 {
+    use Values;
 
     /**
-     * @var string The name of the post type.
+     * @var string
      */
-    protected string $name;
+    private string $pluralName;
 
     /**
-     * @var string The singular name of the post type.
+     * @var string
      */
-    protected string $singularName;
+    private string $singularName;
 
     /**
-     * @var string The plural name of the post type
+     * @var string
      */
-    protected string $pluralName;
+    private string $postType;
 
     /**
-     * @var array<string> The post type labels
+     * @var string[]
      */
-    protected array $labels;
+    private array $labels;
 
     /**
-     * @var array<mixed> The post type arguments.
+     * @var mixed[]
      */
-    protected array $arguments;
+    private array $arguments;
+
+    /**
+     * @var \Posty\Columns\ColumnRepository
+     */
+    private ColumnRepository $columns;
 
     /**
      * Creates a new instance of PostType.
      *
-     * @param string $name
-     * @param string $singular
-     * @param string $plural
+     * @param string      $singular
+     * @param string      $plural
+     * @param string|null $type
      */
-    public function __construct(string $name, string $singular, string $plural)
+    public function __construct(string $singular, string $plural, string $type = null)
     {
-        $this->name = $name;
         $this->singularName = $singular;
         $this->pluralName = $plural;
+        $this->postType = $type ?? sanitize_title($plural);
         $this->labels = $this->getDefaultLabels();
         $this->arguments = $this->getDefaultArguments();
+        $this->columns = new ColumnRepository();
     }
 
     /**
-     * Creates a new instance of PostType.
+     * Returns the labels
      *
-     * @param string $name
-     * @param string $singular
-     * @param string $plural
-     * @return static
+     * @return string[]
      */
-    public static function make(string $name, string $singular, string $plural): self
+    public function getLabels(): array
     {
-        return new static($name, $singular, $plural);
+        return $this->labels;
     }
 
     /**
-     * Registers the custom post type.
+     * Sets the labels.
      *
+     * @param string[]|\Closure $value
      * @return $this
      */
-    public function register(): self
+    public function setLabels($value): self
     {
-        add_action('init', function () {
-            register_post_type($this->name, $this->arguments);
-        });
+        $this->labels = $this->getValueFromArrayOrClosure($value, [$this->getLabels()]);
 
         return $this;
     }
 
     /**
-     * Sets the post type labels.
+     * Returns the arguments
      *
-     * @param array<string> $labels
-     * @return static
+     * @return mixed[]
      */
-    public function setLabels(array $labels): self
+    public function getArguments(): array
     {
-        $this->labels = array_merge($this->getDefaultLabels(), $labels);
-
-        return $this;
+        return $this->arguments;
     }
 
     /**
-     * Sets the arguments for the post type.
+     * Sets the arguments.
      *
-     * @param array<mixed> $arguments
+     * @param string[]|\Closure $value
      * @return $this
      */
-    public function setArguments(array $arguments): self
+    public function setArguments($value): self
     {
-        $this->arguments = array_merge($this->getDefaultArguments(), $arguments);
+        $this->arguments = $this->getValueFromArrayOrClosure($value, [$this->getArguments()]);
 
         return $this;
     }
 
     /**
-     * Adds the given column to the admin screen.
+     * Returns the column repository.
      *
-     * @param string   $name
-     * @param \Closure $callback
-     * @param int|null $order
-     * @return $this
+     * @return \Posty\Columns\ColumnRepository
      */
-    public function addColumn(string $name, Closure $callback, int $order = null): self
+    public function columns(): ColumnRepository
     {
-        $label = sanitize_title($name);
-
-        // First, add the column
-        add_filter('manage_' . $this->name . '_posts_columns', static function (array $columns) use ($name, $label) {
-            $columns[$label] = $name;
-            return $columns;
-        });
-
-        // Then populate it
-        add_action(
-            'manage_' . $this->name . '_posts_custom_column',
-            static function (string $column, int $postId) use ($label, $callback) {
-                if($column === $label) {
-                    echo $callback($postId);
-                }
-            },
-            10,
-            2
-        );
-
-        // And finally, reorder it
-        if($order) {
-            $this->reorderColumns(static function ($columns) use ($label, $order) {
-                $labelIndex = array_search($label, $columns, true);
-                $out = array_splice($columns, $labelIndex, 1);
-                array_splice($columns, $order, 0, $out);
-                return $columns;
-            });
-        }
-
-        return $this;
-    }
-
-    /**
-     * Adds the given columns to the admin screen.
-     *
-     * @param array<string> $columnsToAdd
-     * @return $this
-     */
-    public function addColumns(array $columnsToAdd): self
-    {
-        foreach($columnsToAdd as $columnToAdd) {
-            if(!isset($columnToAdd['name'], $columnToAdd['callback'])) {
-                break;
-            }
-            $this->addColumn($columnToAdd['name'], $columnToAdd['callback'], $columnToAdd['order']);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Removes the given column from the admin screen.
-     *
-     * @param string $columnToRemove
-     * @return $this
-     */
-    public function removeColumn(string $columnToRemove): self
-    {
-        add_filter(
-            'manage_' . $this->name . '_posts_columns',
-            static function (array $existingColumns) use ($columnToRemove) {
-                unset($existingColumns[$columnToRemove]);
-                return $existingColumns;
-            }
-        );
-
-        return $this;
-    }
-
-    /**
-     * Removes the given columns from the admin screen.
-     *
-     * @param array<string> $columnsToRemove
-     * @return $this
-     */
-    public function removeColumns(array $columnsToRemove): self
-    {
-        foreach($columnsToRemove as $columnToRemove) {
-            $this->removeColumn($columnToRemove);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Reorders the goven columns for the admin screen.
-     *
-     * @param array<string>|Closure $columnOrder
-     * @return $this
-     */
-    public function reorderColumns($columnOrder): self
-    {
-        add_filter(
-            'manage_' . $this->name . '_posts_columns',
-            static function (array $existingColumns) use ($columnOrder) {
-
-                if(is_array($columnOrder)) {
-                    return array_merge(array_flip($columnOrder), $existingColumns);
-                }
-
-                if($columnOrder instanceof Closure) {
-                    return array_merge(array_flip($columnOrder(array_keys($existingColumns))), $existingColumns);
-                }
-
-                return $existingColumns;
-            }
-        );
-
-        return $this;
+        return $this->columns;
     }
 
     /**
      * Returns the default labels.
      *
-     * @return array<string>
+     * @return string[]
      */
-    public function getDefaultLabels(): array
+    protected function getDefaultLabels(): array
     {
         return [
             'name'                  => $this->pluralName,
@@ -250,14 +139,14 @@ class Posty
     /**
      * Returns the default arguments.
      *
-     * @return array<mixed>
+     * @return mixed[]
      */
-    public function getDefaultArguments(): array
+    protected function getDefaultArguments(): array
     {
         return [
             'labels'      => $this->labels,
             'public'      => true,
-            'rewrite'     => ['slug' => sanitize_title($this->pluralName)],
+            'rewrite'     => ['slug' => $this->postType],
             'has_archive' => true,
             'supports'    => ['title', 'editor', 'excerpt', 'author', 'thumbnail', 'revisions'],
         ];

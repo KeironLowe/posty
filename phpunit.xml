@@ -2,7 +2,7 @@
 <phpunit testdox="true" colors="true" bootstrap="tests/bootstrap.php">
     <testsuites>
         <testsuite name="WP Unit Testing">
-            <directory suffix="Test.php">./tests/</directory>
+            <directory suffix="Test.php">./tests/unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>
