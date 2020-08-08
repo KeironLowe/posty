@@ -28,11 +28,6 @@ class Column
     private string $id;
 
     /**
-     * @var bool
-     */
-    private bool $isADefaultField = false;
-
-    /**
      * Creates a new instance of Column.
      *
      * @param string        $label
@@ -40,7 +35,7 @@ class Column
      * @param int|null      $order
      * @param string|null   $id
      */
-    public function __construct(string $label, Closure  $value = null, int $order = null, string $id = null)
+    public function __construct(string $label, Closure $value = null, int $order = null, string $id = null)
     {
         $this->label = $label;
         $this->value = $value;
@@ -61,28 +56,6 @@ class Column
         }
 
         return new Column($column['label'], $column['value'], $column['order'] ?? null, $column['id'] ?? null);
-    }
-
-    /**
-     * Set's this field as being default, meaning it's been added by WP.
-     *
-     * @return $this
-     */
-    public function setAsADefaultField(): self
-    {
-        $this->isADefaultField = true;
-
-        return $this;
-    }
-
-    /**
-     * Returns true if this field has been added by WP.
-     *
-     * @return bool
-     */
-    public function isADefaultField(): bool
-    {
-        return $this->isADefaultField;
     }
 
     /**
@@ -119,6 +92,19 @@ class Column
     }
 
     /**
+     * Sets the column label.
+     *
+     * @param string $label
+     * @return \Posty\Columns\Column
+     */
+    public function setLabel(string $label): self
+    {
+        $this->label = $label;
+
+        return $this;
+    }
+
+    /**
      * Returns the column value.
      *
      * @return string
@@ -129,6 +115,19 @@ class Column
     }
 
     /**
+     * Sets the column value.
+     *
+     * @param \Closure $value
+     * @return \Posty\Columns\Column
+     */
+    public function setValue(Closure $value): self
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
      * Returns the column ID.
      *
      * @return string
@@ -136,5 +135,33 @@ class Column
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * Sets the column value.
+     *
+     * @param string $id
+     * @return \Posty\Columns\Column
+     */
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Sets both the label and the id.
+     *
+     * @param string      $label
+     * @param string|null $id
+     * @return $this
+     */
+    public function setLabelAndId(string $label, string $id = null): self
+    {
+        $this->label = $label;
+        $this->id    = $id ?? sanitize_title($label);
+
+        return $this;
     }
 }

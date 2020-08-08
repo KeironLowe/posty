@@ -4,6 +4,7 @@ namespace Posty;
 
 use Posty\Traits\Values;
 use Posty\Columns\ColumnRepository;
+use RuntimeException;
 
 class Posty
 {
@@ -74,7 +75,13 @@ class Posty
      */
     public function setLabels($value): self
     {
-        $this->labels = $this->getValueFromArrayOrClosure($value, [$this->getLabels()]);
+        $labels = $this->getValueFromArrayOrClosure($value, [$this->getLabels()]);
+
+        if(!$labels) {
+            throw new RuntimeException('Invalid label data');
+        }
+
+        $this->labels = $labels;
 
         return $this;
     }
@@ -97,7 +104,13 @@ class Posty
      */
     public function setArguments($value): self
     {
-        $this->arguments = $this->getValueFromArrayOrClosure($value, [$this->getArguments()]);
+        $arguments = $this->getValueFromArrayOrClosure($value, [$this->getArguments()]);
+
+        if(!$arguments) {
+            throw new RuntimeException('Invalid argument data');
+        }
+
+        $this->arguments = $arguments;
 
         return $this;
     }

@@ -33,5 +33,8 @@
     "szepeviktor/phpstan-wordpress": "^0.6.2",
     "phpunit/phpunit": "^9",
     "10up/wp_mock": "dev-feature/closures"
+  },
+  "scripts": {
+    "coverage": "vendor/bin/phpunit --coverage-html coverage-report"
   }
 }

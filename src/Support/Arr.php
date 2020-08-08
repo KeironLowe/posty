@@ -8,33 +8,6 @@ class Arr
 {
 
     /**
-     * Sorts an array from the keys of another.
-     *
-     * @param array $arrayToSort
-     * @param array $arrayToSortFrom
-     * @return array
-     */
-    public static function sortByArray(array $arrayToSort, array $arrayToSortFrom): array
-    {
-        return array_merge(array_flip($arrayToSortFrom), $arrayToSort);
-    }
-
-    /**
-     * Moves an item to another position within the array.
-     *
-     * @param int   $itemAtIndex
-     * @param int   $toIndex
-     * @param array $array
-     * @return array
-     */
-    public static function move(int $itemAtIndex, int $toIndex, array $array): array
-    {
-        $out = array_splice($array, $itemAtIndex, 1);
-        array_splice($array, $toIndex, 0, $out);
-        return $array;
-    }
-
-    /**
      * Returns the
      *
      * @param \Closure $needle

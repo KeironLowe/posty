@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use Posty\Columns\ColumnRepository;
+use RuntimeException;
 use WP_Mock;
 use Posty\Posty;
 use Tests\PostyTestCase;
@@ -19,6 +21,17 @@ class PostyTest extends PostyTestCase
         $this->assertEquals('Add New Product', $labels['add_new_item']);
     }
 
+    /**
+     * @test
+     * @noinspection PhpParamsInspection
+     */
+    public function exception_is_thrown_if_arguments_arent_an_array(): void
+    {
+        $this->expectException(RuntimeException::class);
+
+        $this->createInstance()->setArguments('I should be an array or closure returning an array');
+    }
+
     /** @test */
     public function can_set_the_labels_from_an_array(): void
     {
@@ -32,6 +45,17 @@ class PostyTest extends PostyTestCase
         $this->assertEquals('Pages', $labels['name']);
         $this->assertEquals('Page', $labels['singular_name']);
         $this->assertArrayNotHasKey('add_new_item', $labels);
+    }
+
+    /**
+     * @test
+     * @noinspection PhpParamsInspection
+     */
+    public function exception_is_thrown_if_labels_arent_an_array(): void
+    {
+        $this->expectException(RuntimeException::class);
+
+        $this->createInstance()->setLabels('I should be an array or closure returning an array');
     }
 
     /** @test */
@@ -125,6 +149,14 @@ class PostyTest extends PostyTestCase
         $this->assertEquals(false, $arguments['public']);
         $this->assertEquals(['revisions'], $arguments['supports']);
         $this->assertEquals(true, $arguments['has_archive']);
+    }
+
+    /** @test */
+    public function can_get_the_columns(): void
+    {
+        $posty = $this->createInstance();
+
+        $this->assertInstanceOf(ColumnRepository::class, $posty->columns());
     }
 
     /**

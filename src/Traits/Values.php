@@ -13,7 +13,7 @@ trait Values
      *
      * @param string[]|\Closure $value
      * @param mixed $closureArguments
-     * @return string[]
+     * @return string[]|null
      */
     public function getValueFromArrayOrClosure($value, array $closureArguments = [])
     {
@@ -25,6 +25,6 @@ trait Values
             return $value(...$closureArguments);
         }
 
-        return [];
+        return null;
     }
 }

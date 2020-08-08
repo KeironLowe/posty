@@ -5,6 +5,7 @@ namespace Posty\Columns;
 use Posty\Support\Arr;
 use Posty\Traits\Values;
 use Posty\Support\Repository;
+use RuntimeException;
 
 class ColumnRepository extends Repository
 {
@@ -36,14 +37,14 @@ class ColumnRepository extends Repository
      */
     public function add($columns): self
     {
-        $columns = $this->getValueFromArrayOrClosure($columns);
+        $columnData = $this->getValueFromArrayOrClosure($columns);
 
-        if(!is_array($columns)) {
-            return $this;
+        if(!is_array($columnData)) {
+            throw new RuntimeException('Invalid column data');
         }
 
-        foreach($columns as $columnData) {
-            $column = Column::fromArray($columnData);
+        foreach($columnData as $column) {
+            $column = Column::fromArray($column);
 
             if(!is_null($column->getOrder())) {
                 $this->items = Arr::insert($column, $column->getOrder(), $this->items);
@@ -65,10 +66,11 @@ class ColumnRepository extends Repository
      */
     public function remove($columns): self
     {
-        $columns = $this->getValueFromArrayOrClosure($columns);
+        $columnData = $this->getValueFromArrayOrClosure($columns);
 
-        foreach($columns as $columnId) {
+        foreach($columnData as $columnId) {
             $columnIndex = Arr::getIndexWhere(fn (Column $column) => $column->getId() === $columnId, $this->all());
+
             if($columnIndex) {
                 unset($this->items[$columnIndex]);
             }
@@ -85,7 +87,14 @@ class ColumnRepository extends Repository
      */
     public function reorder($columns): self
     {
-        $columns = $this->getValueFromArrayOrClosure($columns);
+        $columnData = $this->getValueFromArrayOrClosure($columns);
+
+        usort($this->items, static function (Column $a, Column $b) use ($columnData) {
+            $aIndex = array_search($a->getId(), $columnData, true);
+            $bIndex = array_search($b->getId(), $columnData, true);
+
+            return $aIndex > $bIndex;
+        });
 
         return $this;
     }
@@ -107,7 +116,7 @@ class ColumnRepository extends Repository
         ];
 
         return array_map(static function ($value, $index) {
-           return (new Column($value, null, null, $index))->setAsADefaultField();
+           return (new Column($value, null, null, $index));
         }, $defaultColumns, array_keys($defaultColumns));
     }
 }

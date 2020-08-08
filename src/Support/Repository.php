@@ -10,7 +10,7 @@ class Repository implements ArrayAccess
     /**
      * @var array The repository items.
      */
-    protected array $items = [];
+    public array $items = [];
 
     /**
      * Returns true if the given item exists within the repository

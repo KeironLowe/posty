@@ -33,7 +33,7 @@ class PostyTestCase extends TestCase
      * @param array  $array
      * @param string $methodName
      * @param string $value
-     * @return bool
+     * @return void
      */
     public function assertArrayDoesntContainsObjectWithMethodValue(array $array, string $methodName, string $value): void
     {

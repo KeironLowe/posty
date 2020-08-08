@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Columns;
 
+use RuntimeException;
 use WP_Mock;
 use Tests\PostyTestCase;
 use Posty\Columns\Column;
@@ -16,6 +17,19 @@ class ColumnRepositoryTest extends PostyTestCase
         $columns = $this->createInstance()->all();
 
         $this->assertContainsOnlyInstancesOf(Column::class, $columns);
+    }
+
+    /**
+     * @test
+     * @noinspection PhpParamsInspection
+     */
+    public function exception_is_thrown_if_column_data_is_not_an_array(): void
+    {
+        $this->expectException(RuntimeException::class);
+
+        $columnRepository = $this->createInstance();
+
+        $columnRepository->add('I should be an array or a closure returning an array.');
     }
 
     /** @test */
@@ -219,6 +233,31 @@ class ColumnRepositoryTest extends PostyTestCase
 
         $this->assertEquals(
             $expectedOrder,
+            [
+                $columns[0]->getId(),
+                $columns[1]->getId(),
+                $columns[2]->getId(),
+                $columns[3]->getId()
+            ]
+        );
+    }
+
+    /** @test */
+    public function reordering_columns_keeps_missing_items_from_order_list(): void
+    {
+        $instance = $this->createInstance()->reorder([
+            'cb',
+        ]);
+
+        $columns = $instance->all();
+
+        $this->assertEquals(
+            [
+                'cb',
+                'title',
+                'author',
+                'date'
+            ],
             [
                 $columns[0]->getId(),
                 $columns[1]->getId(),
