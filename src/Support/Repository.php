@@ -4,7 +4,7 @@ namespace Posty\Support;
 
 use ArrayAccess;
 
-class Repository implements ArrayAccess
+abstract class Repository implements ArrayAccess
 {
 
     /**
