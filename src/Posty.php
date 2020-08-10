@@ -51,7 +51,7 @@ class Posty
     {
         $this->singularName = $singular;
         $this->pluralName = $plural;
-        $this->postType = $type ?? sanitize_title($plural);
+        $this->postType = $type ?? sanitize_title($singular);
         $this->labels = $this->getDefaultLabels();
         $this->arguments = $this->getDefaultArguments();
     }
@@ -93,7 +93,7 @@ class Posty
             throw new RuntimeException('Invalid label data');
         }
 
-        $this->labels = $labels;
+        $this->labels = array_merge($this->labels, $labels);
 
         return $this;
     }
@@ -122,7 +122,7 @@ class Posty
             throw new RuntimeException('Invalid argument data');
         }
 
-        $this->arguments = $arguments;
+        $this->arguments = array_merge($this->arguments, $arguments);
 
         return $this;
     }
@@ -195,7 +195,7 @@ class Posty
         return [
             'labels'      => $this->labels,
             'public'      => true,
-            'rewrite'     => ['slug' => $this->postType],
+            'rewrite'     => ['slug' => sanitize_title($this->pluralName)],
             'has_archive' => true,
             'supports'    => ['title', 'editor', 'excerpt', 'author', 'thumbnail', 'revisions'],
         ];

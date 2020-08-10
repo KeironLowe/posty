@@ -14,24 +14,6 @@ class PostyTest extends PostyTestCase
 {
 
     /** @test */
-    public function can_auto_generate_post_type_slug(): void
-    {
-        $instance = $this->createInstance();
-
-        $this->assertEquals('products', $instance->getArguments()['rewrite']['slug']);
-    }
-
-    /** @test */
-    public function can_manually_set_post_type_slug(): void
-    {
-        when('sanitize_title')->justReturn('products');
-
-        $instance = new Posty('Product', 'Products', 'sale_products');
-
-        $this->assertEquals('sale_products', $instance->getArguments()['rewrite']['slug']);
-    }
-
-    /** @test */
     public function can_get_the_labels(): void
     {
         $labels = $this->createInstance()->getLabels();
@@ -64,7 +46,6 @@ class PostyTest extends PostyTestCase
 
         $this->assertEquals('Pages', $labels['name']);
         $this->assertEquals('Page', $labels['singular_name']);
-        $this->assertArrayNotHasKey('add_new_item', $labels);
     }
 
     /**
@@ -92,7 +73,6 @@ class PostyTest extends PostyTestCase
 
         $this->assertEquals('Pages', $labels['name']);
         $this->assertEquals('Page', $labels['singular_name']);
-        $this->assertArrayNotHasKey('add_new_item', $labels);
     }
 
     /** @test */
@@ -134,7 +114,6 @@ class PostyTest extends PostyTestCase
 
         $this->assertEquals(false, $arguments['public']);
         $this->assertEquals(['revisions'], $arguments['supports']);
-        $this->assertArrayNotHasKey('has_archive', $arguments);
     }
 
     /** @test */
@@ -151,7 +130,6 @@ class PostyTest extends PostyTestCase
 
         $this->assertEquals(false, $arguments['public']);
         $this->assertEquals(['revisions'], $arguments['supports']);
-        $this->assertArrayNotHasKey('has_archive', $arguments);
     }
 
     /** @test */
@@ -213,7 +191,7 @@ class PostyTest extends PostyTestCase
      */
     protected function createInstance(bool $mocked = false)
     {
-        when('sanitize_title')->justReturn('products');
+        when('sanitize_title')->justReturn('product');
 
         if($mocked) {
             return $this->getMockBuilder(Posty::class)
