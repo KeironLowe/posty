@@ -20,7 +20,7 @@ Posty provides a fluent API for managing both your post types and columns. To ge
 ```
 Posty\Posty::make('Product', 'Products')->register();
 ```
-This post type slug/ID will be automatically generated based on the plural name, so in this case it would be `products`. Optionally, you can pass a third argument to define this yourself.
+This post type slug/ID will be automatically generated based on the singular name, so in this case it would be `product`. Optionally, you can pass a third argument to define this yourself.
 
 ### Setting labels and arguments
 Posty handles setting up all the labels, along with some sensible default arguments, but we know that one size doesn't fit all, so you can update these using the `setLabels` and `setArguments` methods.
