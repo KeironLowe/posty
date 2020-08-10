@@ -1,6 +1,6 @@
 {
   "name": "keironlowe/posty",
-  "description": "Object Orientated WordPress CPT Generator",
+  "description": "Object orientated WordPress post type manager",
   "type": "library",
   "license": "MIT",
   "authors": [

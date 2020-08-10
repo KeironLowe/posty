@@ -57,6 +57,19 @@ class Posty
     }
 
     /**
+     * Returns a new instance of Posty.
+     *
+     * @param string      $singular
+     * @param string      $plural
+     * @param string|null $type
+     * @return \Posty\Posty
+     */
+    public static function make(string $singular, string $plural, string $type = null): Posty
+    {
+        return new static($singular, $plural, $type);
+    }
+
+    /**
      * Returns the labels
      *
      * @return string[]
