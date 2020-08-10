@@ -73,4 +73,40 @@ class ArrTest extends PostyTestCase
 
         $this->assertEquals('Mouse', $array[1]);
     }
+
+    /** @test */
+    public function can_find_items_which_match_the_given_condition(): void
+    {
+        $item = Arr::findWhere(
+            fn ($item) => $item['id'] === 2,
+            [
+                [
+                    'id' => 1,
+                    'title' => 'Test Title'
+                ],
+                [
+                    'id' => 2,
+                    'title' => 'Another Test Title'
+                ]
+            ]
+        );
+
+        $this->assertEquals('Another Test Title', $item['title']);
+    }
+    
+    /** @test */
+    public function find_where_returns_null_if_no_matches(): void
+    {
+        $item = Arr::findWhere(
+            fn ($item) => $item['id'] === 10,
+            [
+                [
+                    'id' => 1,
+                    'title' => 'Test Title'
+                ]
+            ]
+        );
+        
+        $this->assertNull($item);
+    }
 }

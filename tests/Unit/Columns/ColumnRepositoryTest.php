@@ -3,10 +3,11 @@
 namespace Tests\Unit\Columns;
 
 use RuntimeException;
-use WP_Mock;
 use Tests\PostyTestCase;
 use Posty\Columns\Column;
 use Posty\Columns\ColumnRepository;
+
+use function Brain\Monkey\Functions\when;
 
 class ColumnRepositoryTest extends PostyTestCase
 {
@@ -267,6 +268,15 @@ class ColumnRepositoryTest extends PostyTestCase
         );
     }
 
+    /** @test */
+    public function can_register_columns(): void
+    {
+        $this->createInstance()->register();
+
+        $this->assertTrue(has_filter('manage_products_posts_columns', 'function ()'));
+        $this->assertTrue(has_action('manage_products_posts_custom_column', 'function ($column, $post_id)'));
+    }
+
     /**
      * Returns a new instance of Posty
      *
@@ -275,12 +285,12 @@ class ColumnRepositoryTest extends PostyTestCase
      */
     protected function createInstance(bool $mocked = false)
     {
-        WP_Mock::userFunction( 'sanitize_title')->andReturn('return value');
+        when('sanitize_title')->justReturn('anything');
 
         if($mocked) {
-            return $this->getMockBuilder(ColumnRepository::class);
+            return $this->getMockBuilder(ColumnRepository::class)->setConstructorArgs(['products']);
         }
 
-        return new ColumnRepository();
+        return new ColumnRepository('products');
     }
 }

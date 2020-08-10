@@ -2,9 +2,9 @@
 
 namespace Posty;
 
+use RuntimeException;
 use Posty\Traits\Values;
 use Posty\Columns\ColumnRepository;
-use RuntimeException;
 
 class Posty
 {
@@ -36,9 +36,9 @@ class Posty
     private array $arguments;
 
     /**
-     * @var \Posty\Columns\ColumnRepository
+     * @var \Posty\Columns\ColumnRepository|null
      */
-    private ColumnRepository $columns;
+    private ?ColumnRepository $columns;
 
     /**
      * Creates a new instance of PostType.
@@ -54,7 +54,6 @@ class Posty
         $this->postType = $type ?? sanitize_title($plural);
         $this->labels = $this->getDefaultLabels();
         $this->arguments = $this->getDefaultArguments();
-        $this->columns = new ColumnRepository();
     }
 
     /**
@@ -116,12 +115,36 @@ class Posty
     }
 
     /**
+     * Registers the custom post type, plus any columns.
+     *
+     * @return void
+     */
+    public function register(): void
+    {
+        add_action('init', function () {
+
+            // Register the post type.
+            register_post_type($this->postType, $this->arguments);
+
+            // Add the columns
+            if(isset($this->columns)) {
+                $this->columns->register();
+            }
+        });
+    }
+
+    /**
      * Returns the column repository.
      *
+     * @param \Posty\Columns\ColumnRepository|null $columns
      * @return \Posty\Columns\ColumnRepository
      */
-    public function columns(): ColumnRepository
+    public function columns(ColumnRepository $columns = null): ColumnRepository
     {
+        if(!isset($this->columns)) {
+            $this->columns = $columns ?? new ColumnRepository($this->postType);
+        }
+
         return $this->columns;
     }
 

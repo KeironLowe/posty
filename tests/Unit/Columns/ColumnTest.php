@@ -5,8 +5,8 @@ namespace Tests\Unit\Columns;
 use RuntimeException;
 use Tests\PostyTestCase;
 use Posty\Columns\Column;
-use WP_Mock;
-use WP_Mock\Functions;
+
+use function Brain\Monkey\Functions\when;
 
 class ColumnTest extends PostyTestCase
 {
@@ -107,7 +107,7 @@ class ColumnTest extends PostyTestCase
     {
         $column = $this->createInstance();
 
-        WP_Mock::userFunction( 'sanitize_title')->with('Sale Price')->andReturn('sale_price');
+        when('sanitize_title')->justReturn('sale_price');
 
         $column->setLabelAndId('Sale Price');
 
@@ -123,7 +123,7 @@ class ColumnTest extends PostyTestCase
      */
     protected function createInstance(array $arguments = [])
     {
-        WP_Mock::userFunction( 'sanitize_title')->with('Price')->andReturn('price');
+        when('sanitize_title')->justReturn('price');
 
         return Column::fromArray(array_merge(
             [

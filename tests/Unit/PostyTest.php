@@ -2,14 +2,34 @@
 
 namespace Tests\Unit;
 
-use Posty\Columns\ColumnRepository;
-use RuntimeException;
-use WP_Mock;
 use Posty\Posty;
+use RuntimeException;
 use Tests\PostyTestCase;
+use Posty\Columns\ColumnRepository;
+
+use function Brain\Monkey\Functions\when;
+use function Brain\Monkey\Functions\expect;
 
 class PostyTest extends PostyTestCase
 {
+
+    /** @test */
+    public function can_auto_generate_post_type_slug(): void
+    {
+        $instance = $this->createInstance();
+
+        $this->assertEquals('products', $instance->getArguments()['rewrite']['slug']);
+    }
+
+    /** @test */
+    public function can_manually_set_post_type_slug(): void
+    {
+        when('sanitize_title')->justReturn('products');
+
+        $instance = new Posty('Product', 'Products', 'sale_products');
+
+        $this->assertEquals('sale_products', $instance->getArguments()['rewrite']['slug']);
+    }
 
     /** @test */
     public function can_get_the_labels(): void
@@ -159,6 +179,32 @@ class PostyTest extends PostyTestCase
         $this->assertInstanceOf(ColumnRepository::class, $posty->columns());
     }
 
+    /** */
+    public function it_can_register(): void
+    {
+        expect('register_post_type')->once();
+
+        $this->createInstance()->register();
+
+        $this->assertTrue(has_action('init', 'function ()'));
+    }
+
+    /** */
+    public function it_can_register_columns(): void
+    {
+        //WP_Mock::expectActionAdded('init', Functions::type('Closure'));
+
+        $columns = $this->createMock(ColumnRepository::class);
+        $columns->expects($this->once())->method('register');
+
+        $instance = $this->createInstance();
+
+        $instance->columns($columns);
+        $instance->register();
+
+        $this->assertConditionsMet();
+    }
+
     /**
      * Returns a new instance of Posty
      *
@@ -167,7 +213,7 @@ class PostyTest extends PostyTestCase
      */
     protected function createInstance(bool $mocked = false)
     {
-        WP_Mock::userFunction( 'sanitize_title')->andReturn('products');
+        when('sanitize_title')->justReturn('products');
 
         if($mocked) {
             return $this->getMockBuilder(Posty::class)

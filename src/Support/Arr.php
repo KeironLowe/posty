@@ -7,6 +7,25 @@ use Closure;
 class Arr
 {
 
+
+    /**
+     * Returns the first item which matches the given condition.
+     *
+     * @param \Closure $condition
+     * @param array    $array
+     * @return mixed|null
+     */
+    public static function findWhere(Closure $condition, array $array)
+    {
+        foreach($array as $item) {
+            if($condition($item)) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Returns the
      *

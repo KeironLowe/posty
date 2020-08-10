@@ -12,10 +12,18 @@ class ColumnRepository extends Repository
     use Values;
 
     /**
-     * Creates a new instance of ColumnRepository.
+     * @var string The post type the columns belong to.
      */
-    public function __construct()
+    private string $postType;
+
+    /**
+     * Creates a new instance of ColumnRepository.
+     *
+     * @param string $postType
+     */
+    public function __construct(string $postType)
     {
+        $this->postType = $postType;
         $this->items = $this->getDefaultColumns();
     }
 
@@ -97,6 +105,59 @@ class ColumnRepository extends Repository
         });
 
         return $this;
+    }
+
+    /**
+     * Registers the columns.
+     *
+     * @return void
+     */
+    public function register(): void
+    {
+        // Add the columns
+        add_filter('manage_' . $this->postType . '_posts_columns', function () {
+            return $this->getHeadings();
+        });
+
+        // Add the column values
+        add_action('manage_' . $this->postType . '_posts_custom_column', function ($column, $post_id) {
+            echo $this->find($column)->getValue($post_id);
+        }, 10, 2);
+    }
+
+    /**
+     * Returns an array of column headings.
+     *
+     * @return array
+     */
+    protected function getHeadings(): array
+    {
+        $columns = [];
+
+        foreach($this->items as $column) {
+            $columns[$column->getId()] = $column->getLabel();
+        }
+
+        return $columns;
+    }
+
+    /**
+     * Returns the column with the given id
+     *
+     * @param string $id
+     * @return \Posty\Columns\Column
+     */
+    private function find(string $id): Column
+    {
+        $column = Arr::findWhere(static function (Column $column) use ($id) {
+            return $column->getId() === $id;
+        }, $this->items);
+
+        if(!$column) {
+            throw new RuntimeException('Column instance with the ID of "' . $id . '" not found');
+        }
+
+        return $column;
     }
 
     /**

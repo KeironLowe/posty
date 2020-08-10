@@ -2,11 +2,15 @@
 
 namespace Tests;
 
-use WP_Mock;
-use WP_Mock\Tools\TestCase;
+use PHPUnit\Framework\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
+use function Brain\Monkey\setUp;
+use function Brain\Monkey\tearDown;
 
 class PostyTestCase extends TestCase
 {
+    use MockeryPHPUnitIntegration;
 
     /**
      * Set's up the  tests
@@ -14,7 +18,7 @@ class PostyTestCase extends TestCase
      * @return void
      */
     public function setUp(): void {
-        WP_Mock::setUp();
+        setUp();
     }
 
     /**
@@ -23,7 +27,7 @@ class PostyTestCase extends TestCase
      * @return void
      */
     public function tearDown(): void {
-        WP_Mock::tearDown();
+        tearDown();
     }
 
     /**

@@ -107,11 +107,12 @@ class Column
     /**
      * Returns the column value.
      *
+     * @param int|null $postId
      * @return string
      */
-    public function getValue(): string
+    public function getValue(int $postId = null): string
     {
-        return ($this->value)();
+        return ($this->value)($postId);
     }
 
     /**
