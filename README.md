@@ -9,6 +9,8 @@ Posty is an object orientated post type manager for WordPress. It makes it a bre
 - [ ] Tags/Taxonomies
 
 ## Installation
+Posty has no dependencies, and requires PHP >= 7.4.
+
 ```
 composer require keironlowe/posty
 ```

@@ -87,7 +87,7 @@ class Posty
      */
     public function setLabels($value): self
     {
-        $labels = $this->getValueFromArrayOrClosure($value, [$this->getLabels()]);
+        $labels = $this->getValueFromArrayOrClosure($value, $this->getLabels());
 
         if(!$labels) {
             throw new RuntimeException('Invalid label data');
@@ -116,7 +116,7 @@ class Posty
      */
     public function setArguments($value): self
     {
-        $arguments = $this->getValueFromArrayOrClosure($value, [$this->getArguments()]);
+        $arguments = $this->getValueFromArrayOrClosure($value, $this->getArguments());
 
         if(!$arguments) {
             throw new RuntimeException('Invalid argument data');

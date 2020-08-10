@@ -67,14 +67,14 @@ class ColumnRepository extends Repository
     }
 
     /**
-     * Removes a column.
+     * Remove columns.
      *
      * @param string[]|\Closure $columns
      * @return $this
      */
     public function remove($columns): self
     {
-        $columnData = $this->getValueFromArrayOrClosure($columns);
+        $columnData = $this->getValueFromArrayOrClosure($columns, $this->getColumnIds());
 
         foreach($columnData as $columnId) {
             $columnIndex = Arr::getIndexWhere(fn (Column $column) => $column->getId() === $columnId, $this->all());
@@ -95,7 +95,7 @@ class ColumnRepository extends Repository
      */
     public function reorder($columns): self
     {
-        $columnData = $this->getValueFromArrayOrClosure($columns);
+        $columnData = $this->getValueFromArrayOrClosure($columns, $this->getColumnIds());
 
         usort($this->items, static function (Column $a, Column $b) use ($columnData) {
             $aIndex = array_search($a->getId(), $columnData, true);
@@ -158,6 +158,18 @@ class ColumnRepository extends Repository
         }
 
         return $column;
+    }
+
+    /**
+     * Returns an array of the column IDs
+     *
+     * @return array
+     */
+    private function getColumnIds(): array
+    {
+        return array_map(static function (Column $column) {
+            return $column->getId();
+        }, $this->items);
     }
 
     /**

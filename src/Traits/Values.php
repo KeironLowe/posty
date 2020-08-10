@@ -22,7 +22,7 @@ trait Values
         }
 
         if($value instanceof Closure) {
-            return $value(...$closureArguments);
+            return $value($closureArguments);
         }
 
         return null;
