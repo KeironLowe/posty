@@ -123,6 +123,32 @@ class ColumnRepository extends Repository
         add_action('manage_' . $this->postType . '_posts_custom_column', function ($column, $post_id) {
             echo $this->find($column)->getValue($post_id);
         }, 10, 2);
+
+        // Make them sortable
+        add_action('manage_edit-' . $this->postType . '_sortable_columns', function ($columns) {
+            foreach($this->getSortableColumns() as $column) {
+                $columnId = $column->getId();
+                $columns[$columnId] = $columnId;
+
+                add_action('pre_get_posts', function ($query) use ($column) {
+                    $columnId = $column->getId();
+
+                    if(!is_admin() || !$query->is_main_query()) {
+                        return;
+                    }
+
+                    if ($columnId === $query->get('orderby') ) {
+                        $query->set('orderby', 'meta_value');
+                        $query->set('meta_key', $columnId);
+
+                        if($column->getSortType() === 'numeric') {
+                            $query->set('meta_type', $column->getSortType());
+                        }
+                    }
+                });
+            }
+            return $columns;
+        });
     }
 
     /**
@@ -170,6 +196,16 @@ class ColumnRepository extends Repository
         return array_map(static function (Column $column) {
             return $column->getId();
         }, $this->items);
+    }
+
+    /**
+     * Returns an array of columns which are sortable.
+     *
+     * @return Column[]
+     */
+    private function getSortableColumns(): array
+    {
+        return array_filter($this->all(), fn (Column $column) => !is_null($column->getSortType()));
     }
 
     /**

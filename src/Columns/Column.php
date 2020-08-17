@@ -6,26 +6,11 @@ use Closure;
 
 class Column
 {
-
-    /**
-     * @var string
-     */
     private string $label;
-
-    /**
-     * @var \Closure|null
-     */
     private ?Closure $value;
-
-    /**
-     * @var int|null
-     */
     private ?int $order;
-
-    /**
-     * @var string
-     */
     private string $id;
+    private ?string $sort = null;
 
     /**
      * Creates a new instance of Column.
@@ -55,7 +40,20 @@ class Column
             throw new \RuntimeException('Column missing required data.');
         }
 
-        return new Column($column['label'], $column['value'], $column['order'] ?? null, $column['id'] ?? null);
+        $instance = new Column($column['label'], $column['value'], $column['order'] ?? null, $column['id'] ?? null);
+
+        if (isset($column['sort'])) {
+
+            if($column['sort'] === 'alphabetically') {
+                $instance->sortAlphabetically();
+            }
+
+            if($column['sort'] === 'numerically') {
+                $instance->sortNumerically();
+            }
+        }
+
+        return $instance;
     }
 
     /**
@@ -108,9 +106,9 @@ class Column
      * Returns the column value.
      *
      * @param int|null $postId
-     * @return string
+     * @return string|null
      */
-    public function getValue(int $postId = null): string
+    public function getValue(int $postId = null): ?string
     {
         return ($this->value)($postId);
     }
@@ -162,6 +160,40 @@ class Column
     {
         $this->label = $label;
         $this->id    = $id ?? sanitize_title($label);
+
+        return $this;
+    }
+
+    /**
+     * Returns the sorting type for this column.
+     *
+     * @return string|null
+     */
+    public function getSortType(): ?string
+    {
+        return $this->sort;
+    }
+
+    /**
+     * Enables numeric sorting for the column
+     *
+     * @return $this
+     */
+    public function sortNumerically(): self
+    {
+        $this->sort = 'numeric';
+
+        return $this;
+    }
+
+    /**
+     * Enables alphabetical sorting for the column
+     *
+     * @return $this
+     */
+    public function sortAlphabetically(): self
+    {
+        $this->sort = 'alphabetically';
 
         return $this;
     }
