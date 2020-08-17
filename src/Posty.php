@@ -2,6 +2,7 @@
 
 namespace Posty;
 
+use Posty\Columns\Column;
 use RuntimeException;
 use Posty\Traits\Values;
 use Posty\Columns\ColumnRepository;
@@ -136,10 +137,10 @@ class Posty
     {
         add_action('init', function () {
 
-            // Register the post type.
+            // Post type.
             register_post_type($this->postType, $this->arguments);
 
-            // Add the columns
+            // Columns
             if(isset($this->columns)) {
                 $this->columns->register();
             }

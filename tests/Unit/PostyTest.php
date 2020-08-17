@@ -2,16 +2,27 @@
 
 namespace Tests\Unit;
 
+use Mockery;
 use Posty\Posty;
 use RuntimeException;
 use Tests\PostyTestCase;
 use Posty\Columns\ColumnRepository;
 
-use function Brain\Monkey\Functions\when;
-use function Brain\Monkey\Functions\expect;
+use function Brain\Monkey\Actions\expectAdded;
+use function Brain\Monkey\Functions\{when, expect};
 
 class PostyTest extends PostyTestCase
 {
+
+    /** @test */
+    public function can_create_instance_from_static_method(): void
+    {
+        when('sanitize_title')->justReturn('product');
+
+        $instance = Posty::make('Product', 'Products');
+
+        $this->assertInstanceOf(Posty::class, $instance);
+    }
 
     /** @test */
     public function can_get_the_labels(): void
@@ -157,30 +168,49 @@ class PostyTest extends PostyTestCase
         $this->assertInstanceOf(ColumnRepository::class, $posty->columns());
     }
 
-    /** */
+    /** @test */
     public function it_can_register(): void
     {
-        expect('register_post_type')->once();
-
         $this->createInstance()->register();
-
-        $this->assertTrue(has_action('init', 'function ()'));
+        $this->assertTrue(has_action('init'));
     }
 
-    /** */
-    public function it_can_register_columns(): void
+    /** @test */
+    public function it_can_register_the_post_type(): void
     {
-        //WP_Mock::expectActionAdded('init', Functions::type('Closure'));
+        $instance = $this->createInstance();
 
-        $columns = $this->createMock(ColumnRepository::class);
-        $columns->expects($this->once())->method('register');
+        expect('register_post_type')->once()->with('product', $instance->getArguments());
+
+        expectAdded('init')
+            ->once()
+            ->with(Mockery::type('Closure'))
+            ->whenHappen(static function (callable $callback) {
+                $callback();
+            });
+
+        $instance->register();
+    }
+
+    /** @test */
+    public function it_can_register_the_columns(): void
+    {
+        when('register_post_type')->justReturn();
 
         $instance = $this->createInstance();
+        $columns  = Mockery::mock(ColumnRepository::class);
+
+        $columns->shouldReceive('register')->once()->withNoArgs();
+
+        expectAdded('init')
+            ->once()
+            ->with(Mockery::type('Closure'))
+            ->whenHappen(static function (callable $callback) {
+                $callback();
+            });
 
         $instance->columns($columns);
         $instance->register();
-
-        $this->assertConditionsMet();
     }
 
     /**

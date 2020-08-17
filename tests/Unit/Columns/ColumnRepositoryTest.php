@@ -2,11 +2,14 @@
 
 namespace Tests\Unit\Columns;
 
+use Mockery;
 use RuntimeException;
 use Tests\PostyTestCase;
 use Posty\Columns\Column;
 use Posty\Columns\ColumnRepository;
 
+use function Brain\Monkey\Actions\expectAdded as expectActionAdded;
+use function Brain\Monkey\Filters\expectAdded as expectFilterAdded;
 use function Brain\Monkey\Functions\when;
 
 class ColumnRepositoryTest extends PostyTestCase
@@ -269,26 +272,94 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_register_columns(): void
+    public function it_can_register(): void
     {
-        $this->createInstance()->register();
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
 
-        $this->assertTrue(has_filter('manage_products_posts_columns', 'function ()'));
-        $this->assertTrue(has_action('manage_products_posts_custom_column', 'function ($column, $post_id)'));
+        $instance->add([
+            [
+                'label' => 'Price',
+                'value' => static fn () => '£900',
+                'id'    => 'price'
+            ]
+        ]);
+
+        // Register the columns
+        $instance->shouldReceive('getHeadings')->once()->withNoArgs();
+        expectFilterAdded('manage_products_posts_columns')
+            ->once()
+            ->with(Mockery::type('Closure'))
+            ->whenHappen(static function (callable $callback) {
+                $callback();
+            });
+
+        // Populate the column values
+        expectActionAdded('manage_products_posts_custom_column')
+            ->once()
+            ->with(Mockery::type('Closure'), 10, 2)
+            ->whenHappen(static function (callable $callback) {
+                $callback('price', 1);
+            });
+        $this->expectOutputString('£900');
+
+        $instance->register();
+    }
+
+    /** @test */
+    public function it_throws_an_exception_if_a_column_cant_be_found(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+
+        $this->expectException(RuntimeException::class);
+
+        // Populate the column values
+        expectActionAdded('manage_products_posts_custom_column')
+            ->once()
+            ->with(Mockery::type('Closure'), 10, 2)
+            ->whenHappen(static function (callable $callback) {
+                $callback('price', 1);
+            });
+
+        $instance->register();
+    }
+
+    /** @test */
+    public function it_can_get_column_headings(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+
+        $instance->add([
+            [
+                'label' => 'Price',
+                'value' => static fn () => '£900',
+                'id'    => 'price'
+            ]
+        ]);
+
+        $this->assertEquals(
+            [
+                'cb' => '<input type="checkbox" />',
+                'title' => 'Title',
+                'author' => 'Author',
+                'date' => 'Date',
+                'price' => 'Price'
+            ],
+            $instance->getHeadings()
+        );
     }
 
     /**
      * Returns a new instance of Posty
      *
      * @param bool  $mocked
-     * @return \PHPUnit\Framework\MockObject\MockBuilder|\Posty\Columns\ColumnRepository
+     * @return \Mockery\MockInterface|\Posty\Columns\ColumnRepository
      */
     protected function createInstance(bool $mocked = false)
     {
         when('sanitize_title')->justReturn('anything');
 
         if($mocked) {
-            return $this->getMockBuilder(ColumnRepository::class)->setConstructorArgs(['products']);
+            return Mockery::mock(ColumnRepository::class, ['products']);
         }
 
         return new ColumnRepository('products');
