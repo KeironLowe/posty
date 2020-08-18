@@ -16,7 +16,7 @@ class ColumnRepositoryTest extends PostyTestCase
 {
 
     /** @test */
-    public function can_get_the_columns(): void
+    public function it_can_get_the_columns(): void
     {
         $columns = $this->createInstance()->all();
 
@@ -27,7 +27,7 @@ class ColumnRepositoryTest extends PostyTestCase
      * @test
      * @noinspection PhpParamsInspection
      */
-    public function exception_is_thrown_if_column_data_is_not_an_array(): void
+    public function it_throws_an_exception_if_column_data_is_not_an_array(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -37,7 +37,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_add_a_single_column_from_an_array(): void
+    public function it_can_add_a_single_column_from_an_array(): void
     {
         $columnRepository = $this->createInstance();
 
@@ -56,7 +56,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_add_multiple_columns_from_an_array(): void
+    public function it_can_add_multiple_columns_from_an_array(): void
     {
         $columnRepository = $this->createInstance();
 
@@ -81,7 +81,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_add_a_single_column_from_a_closure(): void
+    public function it_can_add_a_single_column_from_a_closure(): void
     {
         $columnRepository = $this->createInstance();
 
@@ -102,7 +102,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_add_a_multiple_columns_from_a_closure(): void
+    public function it_can_add_a_multiple_columns_from_a_closure(): void
     {
         $columnRepository = $this->createInstance();
 
@@ -129,7 +129,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_add_a_column_at_specified_index(): void
+    public function it_can_add_a_column_at_specified_index(): void
     {
         $columnRepository = $this->createInstance();
 
@@ -149,7 +149,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_remove_a_single_column_from_an_array(): void
+    public function it_can_remove_a_single_column_from_an_array(): void
     {
         $columns = $this->createInstance();
 
@@ -159,7 +159,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_remove_multiple_columns_from_an_array(): void
+    public function it_can_remove_multiple_columns_from_an_array(): void
     {
         $columns = $this->createInstance();
 
@@ -170,7 +170,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_remove_a_single_column_from_a_closure(): void
+    public function it_can_remove_a_single_column_from_a_closure(): void
     {
         $columns = $this->createInstance();
 
@@ -182,7 +182,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_remove_multiple_columns_from_a_closure(): void
+    public function it_can_remove_multiple_columns_from_a_closure(): void
     {
         $columns = $this->createInstance();
 
@@ -195,7 +195,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_reorder_columns_from_an_array(): void
+    public function it_can_reorder_columns_from_an_array(): void
     {
         $expectedOrder = [
             'cb',
@@ -220,7 +220,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_reorder_columns_from_a_closure(): void
+    public function it_can_reorder_columns_from_a_closure(): void
     {
         $expectedOrder = [
             'cb',
@@ -247,7 +247,7 @@ class ColumnRepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function reordering_columns_keeps_missing_items_from_order_list(): void
+    public function it_keeps_columns_that_are_missing_from_the_reordering_list(): void
     {
         $instance = $this->createInstance()->reorder([
             'cb',
@@ -346,6 +346,202 @@ class ColumnRepositoryTest extends PostyTestCase
             ],
             $instance->getHeadings()
         );
+    }
+
+    /** @test */
+    public function it_can_get_sortable_columns(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+
+        $instance->add([
+            [
+                'label' => 'Price',
+                'value' => static fn () => '£900',
+                'id'    => 'price',
+                'sort'  => 'numeric'
+            ],
+            [
+                'label' => 'Description',
+                'value' => static fn () => 'Apples',
+                'id'    => 'description'
+            ]
+        ]);
+
+        $this->assertCount(1, $instance->getSortableColumns());
+    }
+
+    /** @test */
+    public function it_can_get_sortable_columns_ids(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+
+        $instance->add([
+            [
+                'label' => 'Price',
+                'value' => static fn () => '£900',
+                'id'    => 'price',
+                'sort'  => 'numeric'
+            ],
+            [
+                'label' => 'Description',
+                'value' => static fn () => 'Apples',
+                'id'    => 'description'
+            ]
+        ]);
+
+        $this->assertEquals(['price' => 'price'], $instance->getSortableColumnsIds());
+    }
+
+    /** @test */
+    public function it_can_register_sortable_columns(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+
+        $instance->add([
+            [
+                'label' => 'Price',
+                'value' => static fn () => '£900',
+                'id'    => 'price',
+                'sort'  => 'numeric'
+            ]
+        ]);
+
+        // Registers the columns as sortable
+        $instance->shouldReceive('getSortableColumnsIds')->once()->withArgs([['test']]);
+        expectActionAdded('manage_edit-products_sortable_columns')
+            ->once()
+            ->with(Mockery::type('Closure'))
+            ->whenHappen(static function (callable $callback) {
+                $callback(['test']);
+            });
+
+        $instance->register();
+    }
+
+    /** @test */
+    public function it_wont_sort_columns_if_not_in_the_admin(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+        $wpQuery  = Mockery::mock('WP_Query');
+
+        $instance->add([
+            [
+                'label' => 'Price',
+                'value' => static fn () => '£900',
+                'id'    => 'price',
+                'sort'  => 'numeric'
+            ]
+        ]);
+
+        when('is_admin')->justReturn(false);
+        $wpQuery->shouldReceive('is_main_query')->andReturn(true);
+
+        expectActionAdded('pre_get_posts')
+            ->once()
+            ->withAnyArgs()
+            ->whenHappen(static function (callable $callback) use ($wpQuery) {
+                $callback($wpQuery);
+            });
+
+        $wpQuery->shouldNotReceive('get');
+
+        $instance->register();
+    }
+
+    /** @test */
+    public function it_wont_sort_columns_if_not_the_main_query(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+        $wpQuery  = Mockery::mock('WP_Query');
+
+        when('is_admin')->justReturn(true);
+        $wpQuery->shouldReceive('is_main_query')->andReturn(false);
+
+        $instance->add([
+            [
+                'label' => 'Price',
+                'value' => static fn () => '£900',
+                'id'    => 'price',
+                'sort'  => 'numeric'
+            ]
+        ]);
+
+        expectActionAdded('pre_get_posts')
+            ->once()
+            ->withAnyArgs()
+            ->whenHappen(static function (callable $callback) use ($wpQuery) {
+                $callback($wpQuery);
+            });
+
+        $wpQuery->shouldNotReceive('get');
+
+        $instance->register();
+    }
+
+    /** @test */
+    public function it_can_sort_columns_numerically(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+        $wpQuery  = Mockery::mock('WP_Query');
+
+        when('is_admin')->justReturn(true);
+        $wpQuery->shouldReceive('is_main_query')->andReturn(true);
+
+        $instance->add([
+            [
+                'label' => 'Price',
+                'value' => static fn () => '£900',
+                'id'    => 'price',
+                'sort'  => 'numeric'
+            ]
+        ]);
+
+        expectActionAdded('pre_get_posts')
+            ->once()
+            ->withAnyArgs()
+            ->whenHappen(static function (callable $callback) use ($wpQuery) {
+                $callback($wpQuery);
+            });
+
+        $wpQuery->shouldReceive('get')->withArgs(['orderby'])->andReturn('price');
+        $wpQuery->shouldReceive('set')->withArgs(['orderby', 'meta_value']);
+        $wpQuery->shouldReceive('set')->withArgs(['meta_key', 'price']);
+        $wpQuery->shouldReceive('set')->withArgs(['meta_type', 'numeric']);
+
+        $instance->register();
+    }
+
+    /** @test */
+    public function it_can_sort_columns_alphabetically(): void
+    {
+        $instance = $this->createInstance(true)->shouldAllowMockingProtectedMethods()->makePartial();
+        $wpQuery  = Mockery::mock('WP_Query');
+
+        when('is_admin')->justReturn(true);
+        $wpQuery->shouldReceive('is_main_query')->andReturn(true);
+
+        $instance->add([
+            [
+                'label' => 'Description',
+                'value' => static fn () => 'Apples',
+                'id'    => 'description',
+                'sort'  => 'alphabetically'
+            ]
+        ]);
+
+        expectActionAdded('pre_get_posts')
+            ->once()
+            ->withAnyArgs()
+            ->whenHappen(static function (callable $callback) use ($wpQuery) {
+                $callback($wpQuery);
+            });
+
+        $wpQuery->shouldReceive('get')->withArgs(['orderby'])->andReturn('description');
+        $wpQuery->shouldReceive('set')->withArgs(['orderby', 'meta_value']);
+        $wpQuery->shouldReceive('set')->withArgs(['meta_key', 'description']);
+        $wpQuery->shouldNotReceive('set')->withAnyArgs();
+
+        $instance->register();
     }
 
     /**

@@ -12,7 +12,7 @@ class ColumnTest extends PostyTestCase
 {
 
     /** @test */
-    public function can_create_a_column_from_an_array(): void
+    public function it_can_create_a_column_from_an_array(): void
     {
         $column = $this->createInstance();
 
@@ -21,7 +21,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function exception_is_thrown_if_creating_column_from_array_and_missing_data(): void
+    public function it_throws_an_exception_if_creating_column_from_array_and_missing_data(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -32,7 +32,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_auto_generate_id_from_label(): void
+    public function it_can_auto_generate_id_from_label(): void
     {
         $column = $this->createInstance();
 
@@ -41,7 +41,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_manually_set_the_id(): void
+    public function it_can_manually_set_the_id(): void
     {
         $column = $this->createInstance([
             'id' => 'sale_price'
@@ -52,7 +52,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_and_get_the_order(): void
+    public function it_can_set_and_get_the_order(): void
     {
         $column = $this->createInstance();
 
@@ -62,7 +62,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_and_get_the_label(): void
+    public function it_can_set_and_get_the_label(): void
     {
         $column = $this->createInstance();
 
@@ -72,7 +72,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_and_get_the_value(): void
+    public function it_can_set_and_get_the_value(): void
     {
         $column = $this->createInstance();
 
@@ -82,7 +82,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_and_get_the_id(): void
+    public function it_can_set_and_get_the_id(): void
     {
         $column = $this->createInstance();
 
@@ -92,7 +92,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_both_the_label_and_id_at_once(): void
+    public function it_can_set_both_the_label_and_id_at_once(): void
     {
         $column = $this->createInstance();
 
@@ -103,7 +103,7 @@ class ColumnTest extends PostyTestCase
     }
 
     /** @test */
-    public function id_can_be_auto_generated_when_setting_both_label_and_id(): void
+    public function it_can_auto_generate_an_id_when_setting_both_label_and_id(): void
     {
         $column = $this->createInstance();
 
@@ -113,6 +113,22 @@ class ColumnTest extends PostyTestCase
 
         $this->assertEquals('Sale Price', $column->getLabel());
         $this->assertEquals('sale_price', $column->getId());
+    }
+
+    /** @test */
+    public function it_can_order_column_alphabetically(): void
+    {
+        $column = $this->createInstance(['sort' => 'alpha']);
+
+        $this->assertEquals('alpha', $column->getSortType());
+    }
+
+    /** @test */
+    public function it_can_order_column_numerically(): void
+    {
+        $column = $this->createInstance(['sort' => 'numeric']);
+
+        $this->assertEquals('numeric', $column->getSortType());
     }
 
     /**

@@ -44,11 +44,11 @@ class Column
 
         if (isset($column['sort'])) {
 
-            if($column['sort'] === 'alphabetically') {
+            if($column['sort'] === 'alpha') {
                 $instance->sortAlphabetically();
             }
 
-            if($column['sort'] === 'numerically') {
+            if($column['sort'] === 'numeric') {
                 $instance->sortNumerically();
             }
         }
@@ -193,7 +193,7 @@ class Column
      */
     public function sortAlphabetically(): self
     {
-        $this->sort = 'alphabetically';
+        $this->sort = 'alpha';
 
         return $this;
     }

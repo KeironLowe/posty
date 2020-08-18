@@ -9,7 +9,7 @@ class RepositoryTest extends PostyTestCase
 {
 
     /** @test */
-    public function can_check_if_item_at_index_exists(): void
+    public function it_can_check_if_item_at_index_exists(): void
     {
         $repository = new class extends Repository {};
         $repository->items = [1, 2, 3, 4, 5];
@@ -18,7 +18,7 @@ class RepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_get_item_at_index(): void
+    public function it_can_get_item_at_index(): void
     {
         $repository = new class extends Repository {};
         $repository->items = [1, 2, 3, 4, 5];
@@ -27,7 +27,7 @@ class RepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_item_at_index(): void
+    public function it_can_set_item_at_index(): void
     {
         $repository = new class extends Repository {};
 
@@ -37,7 +37,7 @@ class RepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_item_without_an_index(): void
+    public function it_can_set_item_without_an_index(): void
     {
         $repository = new class extends Repository {};
         $repository->items = [1, 2, 3, 4, 5];
@@ -48,7 +48,7 @@ class RepositoryTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_remove_item_at_index(): void
+    public function it_can_remove_item_at_index(): void
     {
         $repository = new class extends Repository {};
         $repository->items = [1, 2, 3, 4, 5];
