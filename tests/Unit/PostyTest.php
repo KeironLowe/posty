@@ -15,7 +15,7 @@ class PostyTest extends PostyTestCase
 {
 
     /** @test */
-    public function can_create_instance_from_static_method(): void
+    public function it_can_create_instance_from_static_method(): void
     {
         when('sanitize_title')->justReturn('product');
 
@@ -25,7 +25,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_get_the_labels(): void
+    public function it_can_get_the_labels(): void
     {
         $labels = $this->createInstance()->getLabels();
 
@@ -38,7 +38,7 @@ class PostyTest extends PostyTestCase
      * @test
      * @noinspection PhpParamsInspection
      */
-    public function exception_is_thrown_if_arguments_arent_an_array(): void
+    public function it_throws_an_exception_if_arguments_arent_an_array(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -46,7 +46,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_the_labels_from_an_array(): void
+    public function it_can_set_the_labels_from_an_array(): void
     {
         $instance = $this->createInstance()->setLabels([
             'name' => 'Pages',
@@ -63,7 +63,7 @@ class PostyTest extends PostyTestCase
      * @test
      * @noinspection PhpParamsInspection
      */
-    public function exception_is_thrown_if_labels_arent_an_array(): void
+    public function it_throws_an_exception_if_labels_arent_an_array(): void
     {
         $this->expectException(RuntimeException::class);
 
@@ -71,7 +71,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_set_the_labels_from_a_closure(): void
+    public function it_can_set_the_labels_from_a_closure(): void
     {
         $instance = $this->createInstance()->setLabels(static function () {
             return [
@@ -87,7 +87,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function the_existing_labels_are_passed_as_an_argument_to_the_set_labels_closure(): void
+    public function it_can_pass_the_existing_labels_as_an_argument_to_the_set_labels_closure(): void
     {
         $instance = $this->createInstance()->setLabels(static function (array $existingLabels) {
             $existingLabels['name'] = 'Pages';
@@ -104,7 +104,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function get_can_the_arguments(): void
+    public function it_get_can_the_arguments(): void
     {
         $instance  = $this->createInstance();
         $arguments = $instance->getArguments();
@@ -114,7 +114,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function get_set_the_arguments_from_an_array(): void
+    public function it_get_set_the_arguments_from_an_array(): void
     {
         $instance = $this->createInstance()->setArguments([
             'public' => false,
@@ -128,7 +128,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function get_set_the_arguments_from_a_closure(): void
+    public function it_get_set_the_arguments_from_a_closure(): void
     {
         $instance = $this->createInstance()->setArguments(static function () {
             return [
@@ -144,7 +144,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function the_existing_arguments_are_passed_as_an_argument_to_the_set_arguments_closure(): void
+    public function it_can_pass_the_existing_arguments_to_the_set_arguments_closure(): void
     {
         $instance = $this->createInstance()->setArguments(static function (array $existingArguments) {
             $existingArguments['public'] = false;
@@ -161,7 +161,7 @@ class PostyTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_get_the_columns(): void
+    public function it_can_get_the_columns(): void
     {
         $posty = $this->createInstance();
 

@@ -11,9 +11,6 @@ class ColumnRepository extends Repository
 {
     use Values;
 
-    /**
-     * @var string The post type the columns belong to.
-     */
     private string $postType;
 
     /**
@@ -123,6 +120,31 @@ class ColumnRepository extends Repository
         add_action('manage_' . $this->postType . '_posts_custom_column', function ($column, $post_id) {
             echo $this->find($column)->getValue($post_id);
         }, 10, 2);
+
+        // Add them to list of sortable columns
+        add_action('manage_edit-' . $this->postType . '_sortable_columns', function (array $columns) {
+            return $this->getSortableColumnsIds($columns);
+        });
+
+        // Implement the sorting
+        add_action('pre_get_posts', function ($query) {
+            foreach($this->getSortableColumns() as $column) {
+
+                if(!is_admin() || !$query->is_main_query()) {
+                    return;
+                }
+
+                $columnId = $column->getId();
+                if ($columnId === $query->get('orderby') ) {
+                    $query->set('orderby', 'meta_value');
+                    $query->set('meta_key', $columnId);
+
+                    if($column->getSortType() === 'numeric') {
+                        $query->set('meta_type', $column->getSortType());
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -147,7 +169,7 @@ class ColumnRepository extends Repository
      * @param string $id
      * @return \Posty\Columns\Column
      */
-    private function find(string $id): Column
+    protected function find(string $id): Column
     {
         $column = Arr::findWhere(static function (Column $column) use ($id) {
             return $column->getId() === $id;
@@ -165,11 +187,39 @@ class ColumnRepository extends Repository
      *
      * @return array
      */
-    private function getColumnIds(): array
+    protected function getColumnIds(): array
     {
         return array_map(static function (Column $column) {
             return $column->getId();
         }, $this->items);
+    }
+
+    /**
+     * Returns an array of columns which are sortable.
+     *
+     * @return Column[]
+     */
+    protected function getSortableColumns(): array
+    {
+        return array_filter($this->all(), fn (Column $column) => !is_null($column->getSortType()));
+    }
+
+    /**
+     * Returns an array of columns which are sortable.
+     *
+     * @param array $existingColumns
+     * @return Column[]
+     */
+    protected function getSortableColumnsIds(array $existingColumns = []): array
+    {
+        $customSortableColumns = $this->getSortableColumns();
+
+        foreach($customSortableColumns as $column) {
+            $columnId = $column->getId();
+            $existingColumns[$columnId] = $columnId;
+        }
+
+        return $existingColumns;
     }
 
     /**

@@ -9,7 +9,7 @@ class ArrTest extends PostyTestCase
 {
 
     /** @test */
-    public function can_get_array_index_from_a_closure(): void
+    public function it_can_get_array_index_from_a_closure(): void
     {
         $index = Arr::getIndexWhere(
             fn ($item) => $item['id'] === 3,
@@ -30,7 +30,7 @@ class ArrTest extends PostyTestCase
     }
 
     /** @test */
-    public function get_index_where_returns_null_if_no_matches(): void
+    public function it_can_return_null_if_get_index_has_no_matches(): void
     {
         $index = Arr::getIndexWhere(
             fn ($item) => $item['id'] === 10,
@@ -45,7 +45,7 @@ class ArrTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_insert_items_at_the_start_of_the_array(): void
+    public function it_can_insert_items_at_the_start_of_the_array(): void
     {
         $array = ['Cat', 'Dog'];
 
@@ -55,7 +55,7 @@ class ArrTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_insert_items_at_end_start_of_the_array(): void
+    public function it_can_insert_items_at_end_start_of_the_array(): void
     {
         $array = ['Cat', 'Dog'];
 
@@ -65,7 +65,7 @@ class ArrTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_insert_items_between_the_start_and_end_of_array(): void
+    public function it_can_insert_items_between_the_start_and_end_of_array(): void
     {
         $array = ['Cat', 'Dog'];
 
@@ -75,7 +75,7 @@ class ArrTest extends PostyTestCase
     }
 
     /** @test */
-    public function can_find_items_which_match_the_given_condition(): void
+    public function it_can_find_items_which_match_the_given_condition(): void
     {
         $item = Arr::findWhere(
             fn ($item) => $item['id'] === 2,
@@ -95,7 +95,7 @@ class ArrTest extends PostyTestCase
     }
     
     /** @test */
-    public function find_where_returns_null_if_no_matches(): void
+    public function it_can_return_null_if_find_no_no_matches(): void
     {
         $item = Arr::findWhere(
             fn ($item) => $item['id'] === 10,
