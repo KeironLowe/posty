@@ -4,7 +4,7 @@ Posty is an object orientated post type manager for WordPress. It makes it a bre
 ## Roadmap
 - [x] Post Type
 - [x] Columns
-- [ ] Sortable Columns
+- [x] Sortable Columns
 - [ ] Statuses
 - [ ] Tags/Taxonomies
 
