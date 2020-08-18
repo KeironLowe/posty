@@ -61,18 +61,22 @@ The `add` method should receive an array of columns. Each column should be an ar
 The `label` is the label for the column, and the `value` should be a function which takes the ID of the post, and returns the correct value. Optionally, there is also the `order` element, which should be an integer and allows you to reorder the column.
 
 The ID of the field is automatically generated from the label, but in the case you need to manually set this, you can use the `id` element.
+
+You can make the column sortable by setting the `sort` element to either `alpha` or `numeric`. 
 ```php
 $columns->add([
     [
         'label' => 'Price'
         'value' => fn (int $post_id) => get_field('price', $post_id)
-        'order' => 2
+        'order' => 2,
+        'sort'  => 'numeric'
     ],
     [
         'label' => 'Image'
         'value' => fn (int $post_id) => get_field('image', $post_id)
         'order' => 3,
-        'id'    => 'alternate_image'
+        'id'    => 'alternate_image',
+        'sort'  => 'alpha'
     ]
 ]);
 
